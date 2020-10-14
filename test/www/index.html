@@ -1,0 +1,77 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="https://cdn.staticfile.org/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="./dx_chat_view.js?x=3" ></script>
+    <script type="text/javascript" src="./dx_proto.js?x=3" ></script>
+    <script type="text/javascript" src="./dx_ws.js?x=2" ></script>
+
+    <script type="text/javascript">
+
+    $(document).ready(function(){
+        $("#testBtn").click(function(){
+            $("#msgView").html('');
+        });
+
+        $("#connBtn").click(function(){
+            DxWs.init(DxChatView.printMsg);
+            DxWs.connect("ws://"+window.location.host+"/chat");
+        });
+
+        $("#closeBtn").click(function(){
+            DxWs.close();
+            DxChatView.printMsg("离开");
+        });
+
+        $("#sendPriBtn").click(function(){
+            var chatMsg = {
+                _ver : 1,
+                _type : 4,
+                _time: Date.now(),
+                _from:$("#uidText").val(),
+                _to:$("#toText").val(),
+                _offline:0,
+                _chat_type:0,
+                _payload : {
+                    text : $('#msgText').val()
+                }
+            };
+            DxWs.ws.send(DxProto.pack(chatMsg))
+        });
+
+        $("#sendGrpBtn").click(function(){
+            DxChatView.printMsg("sendGrpBtn");
+        });
+
+
+    });
+
+    </script>
+</head>
+
+<body>
+    <div id="sse">
+        <form action="">
+            <input id = "connBtn" type="button" value="进入">&nbsp;&nbsp;
+            <input id = "closeBtn" type="button" value="离开">
+            <hr>
+            <div id="msgView" style="height:300px;width:800px;overflow:auto;border:1px solid rgb(142, 141, 141);"></div>
+            <br>
+            userId:<input id="uidText" type="text" value="99">&nbsp;&nbsp;
+            to:<input id="toText" type="text" value="99">
+            <br><br>
+            内容:
+            <textarea id="msgText" rows="6" cols="90"></textarea>
+            <br>
+            <hr>
+            <input id = "sendPriBtn" type="button" value="发送私聊">&nbsp;&nbsp;&nbsp;&nbsp;
+            <input id = "sendGrpBtn" type="button" value="发送群聊">&nbsp;&nbsp;&nbsp;&nbsp;
+            <input id = "testBtn" type="button" value="clear">
+            <br>
+        </form>
+    </div>
+</body>
+
+</html>
